@@ -1,7 +1,7 @@
 import sys
 import cx_Oracle # the package used for accessing Oracle in Python
 import getpass # the package for getting password from user without displaying it
-#import main_interface
+import main_interface
 
 def main():
     print("Login your Oracle Database account")
@@ -46,12 +46,12 @@ def register_user():
     curs.execute("select u.email from users u where u.email = '{}'".format(email))
     emails=curs.fetchall()
     if len(emails) > 0:
-	    input("Email already exists (enter to continue)")
+	    input("E-mail already exists (Press <ENTER> to continue)")
 	    return
     password = getpass.getpass("Password: ")
     curs.execute("insert into users values ('{}', '{}', null)".format(email, password))
     connection.commit()
-    input("User created (enter to continue)")	   
+    input("User created Successfully (Press <ENTER> to continue)")	   
 def login_user():
     email=input("Enter your E-mail address: ")
     password = getpass.getpass("Enter your password: ")
@@ -62,8 +62,8 @@ def login_user():
 	    curs.execute("select * from airline_agents a where a.email = '{}'".format(email))
 	    agents=curs.fetchall()
 	    if len(agents) == 1:
-	        isAgent = True
-	        MainScreen.mainScreen(database, email, isAgent)
+		    isAgent = True
+	    main_interface.main(conString,connection,curs,email, isAgent)
     else:
 	    input("Invalid login")	
-main()
+main()	

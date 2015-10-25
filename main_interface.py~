@@ -19,15 +19,13 @@ def main(conString,connection,curs,email, isAgent):
             if isAgent==True:
                 record_dep()
             else:
-                curs.execute("update users set last_login = sysdate where users.email = '{}'".format(email))
-                connection.commit()
-                break
-        elif user_input == "4" and isAgent==True:
+		curs.execute("update users set last_login = sysdate where users.email = '{}'".format(email))
+		connection.commit()                
+        elif user_input == "4":
             search_engine()
-        elif user_input.lower() == '5' and isAgent==True:
-            curs.execute("update users set last_login = sysdate where users.email = '{}'".format(email))
-            connection.commit()
-            break
+	elif user_input.lower() == '5' and isAgent==True:
+	    curs.execute("update users set last_login = sysdate where users.email = '{}'".format(email))
+	    connection.commit()  
         else:
             print("Invalid opertion number.")
             print()
