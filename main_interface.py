@@ -12,7 +12,7 @@ def main(conString,connection,curs,email, isAgent):
             print("3.Log out?")
         user_input = input ("Please enter the opertion number to continue, or to log_out: ")	    
         if user_input == "1":
-            prescription()
+            Search.search_flight()
         elif user_input == "2":
             medical_test()
         elif user_input == "3":
