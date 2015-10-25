@@ -31,12 +31,15 @@ def database_connection():
     # The URL we are connnecting to
     global conString
     conString=''+user+'/' + pw +'@gwynne.cs.ualberta.ca:1521/CRS'
+    #conString=''+'xinchao'+'/' + 'Wang0408' +'@gwynne.cs.ualberta.ca:1521/CRS'
     try:
 	    global connection 
 	    global curs
 	    connection = cx_Oracle.connect(conString)
 	    curs = connection.cursor()
     except cx_Orprintacle.DatabaseError as exc:
+    #except Exception as exc:
+	    #pass
 	    error, = exc.args
 	    print( sys.stderr, "Oracle code:", error.code)
 	    print( sys.stderr, "Oracle message:", error.message)
