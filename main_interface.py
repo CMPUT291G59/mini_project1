@@ -1,9 +1,5 @@
-#def create_user():
-    
-#def user_login():
-    
-    
-    
+import main
+
 def main():
     print("Welcome to W&M flight booking system!")
     print("Do you have acount with us? (Y/N)")
