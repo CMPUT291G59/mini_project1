@@ -7,10 +7,12 @@ def main():
     database_connection()
     print("Welcome to W&M flight booking system!")
     print("Do you have acount with us? (Y/N)")
-    a=input().upper
-    if a=="Y":
+    a=input()
+    b="Y"
+    c="N"
+    if a.upper()=="Y":
 	    login_user()
-    elif a=="N":
+    elif a.upper()=="N":
 	    register_user()
 	    login_user()
     else: 
@@ -26,8 +28,11 @@ def database_connection():
     pw = getpass.getpass()
     
     # The URL we are connnecting to
+    global conString
     conString=''+user+'/' + pw +'@gwynne.cs.ualberta.ca:1521/CRS'
     try:
+	    global connection 
+	    global curs
 	    connection = cx_Oracle.connect(conString)
 	    curs = connection.cursor()
     except cx_Orprintacle.DatabaseError as exc:
@@ -37,21 +42,25 @@ def database_connection():
 def register_user():
     email = input("Enter your E-mail address that you wish to register: ")
     # check the existing of the email address
-    emails = curs.excute("select u.email from users u where u.email = '{}'".format(email))
+    curs.execute("select u.email from users u where u.email = '{}'".format(email))
+    emails=curs.fetchall()
+    print(emails)
     if len(emails) > 0:
 	    input("Email already exists (enter to continue)")
 	    return
     password = getpass.getpass("Password: ")
-    curs.executemany("insert into users values ('{}', '{}', null)".format(email, password))
+    curs.execute("insert into users values ('{}', '{}', null)".format(email, password))
     connection.commit()
     input("User created (enter to continue)")	   
 def login_user():
     email=input("Enter your E-mail address: ")
     password = getpass.getpass("Enter your password: ")
-    users = curs.excute("select u.email, u.pass from users u where u.email = '{}' and u.pass = '{}'".format(email, password))
+    curs.execute("select u.email, u.pass from users u where u.email = '{}' and u.pass = '{}'".format(email, password))
+    users=curs.fetchall()
     if len(users) == 1:
 	    isAgent = False
-	    agents = curs.excute("select * from airline_agents a where a.email = '{}'".format(email))
+	    curs.execute("select * from airline_agents a where a.email = '{}'".format(email))
+	    agents=curs.fetchall()
 	    if len(agents) == 1:
 	        isAgent = True
 	        MainScreen.mainScreen(database, email, isAgent)
