@@ -7,17 +7,20 @@ def main():
     print("Login your Oracle Database account")
     database_connection()
     print("Welcome to W&M flight booking system!")
-    print("Do you have acount with us? (Y/N)")
-    a=input()
-    b="Y"
-    c="N"
-    if a.upper()=="Y":
-	    login_user()
-    elif a.upper()=="N":
-	    register_user()
-	    login_user()
-    else: 
-	    print("Your enter is invalid!")
+    user_input = ""
+    while True:
+        print("Do you have acount with us? (Y/N)")
+        a=input()
+        if a.upper()=="Y":
+            user_input = login_user()
+            if user_input == "q":
+                break
+        elif a.upper()=="N":
+            register_user()
+            user_input = login_user()
+           
+        else: 
+	        print("Your enter is invalid! press enter and try again")
 
 def database_connection():
     # get username
@@ -63,7 +66,9 @@ def login_user():
 	    agents=curs.fetchall()
 	    if len(agents) == 1:
 		    isAgent = True
-	    main_interface.main(conString,connection,curs,email, isAgent)
+	    user_input = main_interface.main(conString,connection,curs,email, isAgent)
+	    return user_input
     else:
-	    input("Invalid login")	
+	    input("Invalid login")
+    
 main()	

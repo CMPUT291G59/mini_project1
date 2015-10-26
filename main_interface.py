@@ -7,10 +7,11 @@ def main(conString,connection,curs,email, isAgent):
         if isAgent==True:
             print("3.Rcord flight departure?")
             print("4.Rcord flight arrival?")
-            print("5.Log out?")
+            print("Enter Q to logout your account")
         else:
-            print("3.Log out?")
-        user_input = input ("Please enter the opertion number to continue, or to log_out: ")	    
+            print("Enter Q to logout your account")
+        user_input = input("Please enter the opertion number to continue, or to logout: ")
+        quit = "q"
         if user_input == "1":
             Search.search_flight()
         elif user_input == "2":
@@ -18,13 +19,9 @@ def main(conString,connection,curs,email, isAgent):
         elif user_input == "3":
             if isAgent==True:
                 record_dep()
-            else:
-                curs.execute("update users set last_login = sysdate where users.email = '{}'".format(email))
-                connection.commit()
-                break
         elif user_input == "4" and isAgent==True:
             search_engine()
-        elif user_input.lower() == '5' and isAgent==True:
+        elif user_input.lower() == 'q':
             curs.execute("update users set last_login = sysdate where users.email = '{}'".format(email))
             connection.commit()
             break
@@ -35,4 +32,6 @@ def main(conString,connection,curs,email, isAgent):
     print()
     print("Thanks for using W&M flight booking System.")
     print("Your conveniency has always been our first priority.")
-    print("We hope you have a nice day.")        
+    
+    print("We hope you have a nice day.")
+    return user_input
