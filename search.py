@@ -1,6 +1,16 @@
-def search_flight(conString,connection,curs,email):
-    dep_airport=input("Enter your departure airport: ")
-    arr_airport=input("Enter your arrival airport: ")
-    a=input("Do you want to book round trip? (Y/N) ")
-    if a.upper()=="Y":
-        
+import sys
+import os 
+import create_view
+def find_direct_flight(conString,connection,curs,email,src,dst,dep_date):
+    print(11111)
+    create_view.search_view(conString,connection,curs)
+    print(22222)
+    print(src,dst,dep_date)
+    query ="""select * 
+    from available_flights a
+    where a.src='YEG' and
+    a.dst='YVR' and
+    a.dep_date=to_date('15/10/2015','dd/mm/yyyy')"""
+    curs.execute(query.format(src, dst, dep_date))
+    flight=curs.fetchall()
+    print(flight)
