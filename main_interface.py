@@ -19,9 +19,15 @@ def main(conString,connection,curs,email, isAgent):
             medical_test()
         elif user_input == "3":
             if isAgent==True:
-                record_dep()
+                flight_num = input("please enter the filght number that you want to update")
+                dep_date = input("please enter the depart date of your flight")
+                dep_time = input("please enter the actual depart time of your flight")
+                record_dep(conString,connection,curs, flight_num, dep_date, dep_time)
         elif user_input == "4" and isAgent==True:
-            search_engine()
+            flight_num = input("please enter the filght number that you want to update")
+            arv_date = input("please enter the arrival date of your flight")
+            arv_time = input("please enter the actual arrival time of your flight")
+            record_arv(conString,connection,curs,flight_num, arv_date, arv_time)
         elif user_input.lower() == 'q':
             curs.execute("update users set last_login = sysdate where users.email = '{}'".format(email))
             connection.commit()
@@ -53,5 +59,21 @@ def search_flight(conString,connection,curs,email):
     a=a.upper()
     if a=="N" and roundtrip=="N":
         search.find_direct_flight(conString,connection,curs,email,src,dst,dep_date)
+
+
+def record_dep(conString,connection,curs, flightno, dep_date, time):
+    query = """UPDATE sch_flights
+        SET act_dep_time = TO_DATE('{0}', 'HH24:MI')
+        WHERE flightno = '{1}' AND dep_date = TO_DATE('{2}', 'DD/MM/YYYY')""".format(time, flightno, dep_date)	
+    curs.execute(query)
+    connection.commit()
+
+def record_arv(conString,connection,curs, flightno,arv_date,time):
+    query = """UPDATE sch_flights
+        SET act_arr_time = TO_DATE('{0}', 'HH24:MI')
+        WHERE flightno = '{1}' AND dep_date = TO_DATE('{2}', 'DD/MM/YYYY')""".format(time, flightno, arv_date)	
+    curs.execute(query)
+    connection.commit()
+
         
         
