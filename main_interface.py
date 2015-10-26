@@ -39,15 +39,19 @@ def main(conString,connection,curs,email, isAgent):
     
 def search_flight(conString,connection,curs,email):
     src=input("Enter your departure airport: ")
+    src=src.upper()
     dst=input("Enter your arrival airport: ")
-    a=input("Do you want to book round trip? (Y/N) ")
-    if a.upper()=="Y":
+    dst=dst.upper()
+    roundtrip=input("Do you want to book round trip? (Y/N) ")
+    roundtrip=roundtrip.upper()
+    if roundtrip=="Y":
         dep_date=input("Enter your departure date (dd/mm/yyyy)")
         reture_date=input("Enter your returen date (dd/mm/yyyy)")
-    if a.upper()=="N":
+    if roundtrip=="N":
         dep_date=input("Enter your departure date (dd/mm/yyyy)")
-    roundtrip=input("Do you want connecting flights? (Y/N) ")
-    if roundtrip=="N" and a=="N":
+    a=input("Do you want connecting flights? (Y/N) ")
+    a=a.upper()
+    if a=="N" and roundtrip=="N":
         search.find_direct_flight(conString,connection,curs,email,src,dst,dep_date)
         
         
