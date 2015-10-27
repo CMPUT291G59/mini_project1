@@ -46,6 +46,7 @@ def main(conString,connection,curs,email, isAgent):
 def search_flight(conString,connection,curs,email):
     src=input("Enter your departure airport: ")
     src=search.find_acode(conString,connection,curs,src)
+    print(src)
     dst=input("Enter your arrival airport: ")
     dst=search.find_acode(conString,connection,curs,dst)
     roundtrip=input("Do you want to book round trip? (Y/N) ")
