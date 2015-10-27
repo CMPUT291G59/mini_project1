@@ -1,26 +1,62 @@
 import random
-
+import sys
+import interface
 def bookingView(conString,connection,curs, email):
     query = """select tickets.name, tickets.paid_price, bookings.* from
-        bookings, tickets where
-        tickets.tno = bookings.tno and
-        tickets.email = '{0}'""".format(email)
-        database.cursor.execute(query)
-
-def addBooking(conString,connection,curs, tno, email, flightno, fare, dep_date, price):
+    bookings, tickets where
+    tickets.tno = bookings.tno and
+    tickets.email = '{0}'""".format(email)
+    curs.execute(query)
+    bv=curs.fetchall()
+    print("Index".ljust(13)+"Ticket_no".ljust(13)+"passenger".ljust(13)+"dep_time".ljust(13)+"price")
+    for i, a in enumerate(bv):
+        print(str(i + 1).ljust(13) +str(a[2]).ljust(13)+ str(a[0].strip()).ljust(13)+(a[5].strftime('%d/%m/%y')).ljust(13)+str(a[1]))
+def addBooking(conString,connection,curs, email, name, con, tno, pay, flightno, fare, dep_date):
     a = str(random.randint(0, 99))
     b = random.choice("ABCDEF")
-    seatNum = a+b			
-    query = """insert into bookings
-        values({0}, '{1}', '{2}', to_date('{3}', 'YYYY-MM-DD'), '{4}')""".format(tno, flightno, fare, dep_date, seatNum)
-    curs.execute(query)
-    connnection.commit()
-    return tno
-
-def cancelBooking(conString,connection,curs, tno):
-    query = """delete from
-    bookings where bookings = {}""".format(tno)
+    seatNum = a+b
+    
+    query =""" insert into passengers values('{0}','{1}','{2}')""".format(email, name, fare, con)
     curs.execute(query)
     connection.commit()
+    query =""" insert into tickets values('{0}','{1}','{2}','{3}')""".format(tno, name, email, pay)
+    curs.execute(query)
+    connection.commit()
+			
+    query = """insert into bookings
+        values({0}, '{1}', '{2}', to_date('{3}', 'DD/MM/YYYY'), '{4}')""".format(tno, flightno, fare, dep_date, seatNum)
+    curs.execute(query)
+    connection.commit()
+    print("Your booking is successful! Your booking number is "+str(tno))
+    return tno
+
+def cancelBooking(conString,connection,curs, tno, name):
+    query = """delete from
+    bookings where bookings.tno = '{0}'""".format(tno)
+    curs.execute(query)
+    connection.commit()
+    
+    query = """delete from
+    tickets where tickets.tno = '{0}'""".format(tno)
+    curs.execute(query)
+    connection.commit()        
+    
+    query = """delete from
+    passengers where passengers.name = '{0}'""".format(name)
+    curs.execute(query)
+    connection.commit()         
 
 
+
+#print("welcome")
+#a = random.randint(0, 9999)
+#print(a)
+#tno = addBooking(conString,connection,curs,'1234@gmail.com','1234','USA',a,88888,'AC001','J','15/10/2015')
+#print("this is t number")
+#print("success added")
+#bookingView(conString,connection,curs, email)
+#tno = int(input("please enter tno"))
+#name = input("name please")
+#cancelBooking(conString,connection,curs, tno,name)
+
+#print("fucking deleted")

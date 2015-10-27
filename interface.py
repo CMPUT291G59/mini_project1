@@ -1,6 +1,8 @@
 import os
 import sys
 import search
+import booking
+import random
 def main(conString,connection,curs,email, isAgent):
     while True:
         print("1.Search Flight?")
@@ -16,7 +18,7 @@ def main(conString,connection,curs,email, isAgent):
         if user_input == "1":
             search_flight(conString,connection,curs,email)
         elif user_input == "2":
-            medical_test()
+            booking.bookingView(conString,connection,curs, email)
         elif user_input == "3":
             if isAgent==True:
                 flight_num = input("please enter the filght number that you want to update")
@@ -49,6 +51,7 @@ def search_flight(conString,connection,curs,email):
     print(src)
     dst=input("Enter your arrival airport: ")
     dst=search.find_acode(conString,connection,curs,dst)
+    print(dst)
     roundtrip=input("Do you want to book round trip? (Y/N) ")
     roundtrip=roundtrip.upper()
     if roundtrip=="Y":
@@ -57,10 +60,22 @@ def search_flight(conString,connection,curs,email):
     if roundtrip=="N":
         dep_date=input("Enter your departure date (dd/mm/yyyy)")
     print("How may stop you want? (Maximum 2 stop) ")
-            
+    c="You enter is greater than maxmum number of stops.\nPlease try entera number less than 3"
+    a=input("")
+    a=check_int(a,3,c)
     if a==0 and roundtrip=="N":
         print("Departure on "+dep_date+"\n")
-        search.find_direct_flight(conString,connection,curs,email,src,dst,dep_date)  
+        alist=search.find_direct_flight(conString,connection,curs,email,src,dst,dep_date)
+        check=input("Do you want to book any flight above? (Y/N) ")
+        check=check_str(check)
+        if check=="Y":
+            print("Enter the index of flight you want to choose ")
+            choose=input("")
+            choose=check_int(choose,len(alist)+1,"Invalid enter!")
+            passenger_detail(conString,connection,curs, email,alist,choose,dep_date)
+            print(11111111111111111111)
+        elif check=="N":
+            pass         
     if a==0 and roundtrip=="Y":
         print("Departure on "+dep_date+"\n")
         search.find_direct_flight(conString,connection,curs,email,src,dst,dep_date)
@@ -72,9 +87,14 @@ def search_flight(conString,connection,curs,email):
     if a==1 and roundtrip=="N":
         print("Departure on "+dep_date+"\n")
         search.find_regular_flight(conString,connection,curs,email,src,dst,dep_date)
+        check=input("Do you want to book any flight above? (Y/N) ")
+        check=check_str(check)
+        if check=="Y":
+            print(1)
+        elif check=="N":
+            pass                
     if a==1 and roundtrip=="Y":
         print("Departure on "+dep_date+"\n")
-        search.find_regular_flight(conString,connection,curs,email,src,dst,dep_date)
         src1=src
         dst1=dst
         src=dst1
@@ -84,6 +104,12 @@ def search_flight(conString,connection,curs,email):
     if a==2 and roundtrip=="N":
         print("Departure on "+dep_date+"\n")
         search.find_2stop_flight(conString,connection,curs,email,src,dst,dep_date)
+        check=input("Do you want to book any flight above? (Y/N) ")
+        check=check_str(check)
+        if check=="Y":
+            print(1)
+        elif check=="N":
+            pass        
     if a==2 and roundtrip=="Y":
         print("Departure on "+dep_date+"\n")
         search.find_2stop_flight(conString,connection,curs,email,src,dst,dep_date)
@@ -93,7 +119,6 @@ def search_flight(conString,connection,curs,email):
         dst=src1
         print("\n"+"Return on "+return_date+"\n")
         search.find_2stop_flight(conString,connection,curs,email,src,dst,dep_date)
-        search.find_direct_flight(conString,connection,curs,email,src,dst,dep_date)
 
 
 def record_dep(conString,connection,curs, flightno, dep_date, time):
@@ -109,24 +134,38 @@ def record_arv(conString,connection,curs, flightno,arv_date,time):
         WHERE flightno = '{1}' AND dep_date = TO_DATE('{2}', 'DD/MM/YYYY')""".format(time, flightno, arv_date)	
     curs.execute(query)
     connection.commit()
-def check_int(a,b):
+def check_int(a,b,c):
     check=False
     while check==False:
         try:
-            a=int(input(""))
+            a=int(a)
             if a>b or isinstance(a,int)==False:
                 check=False
+                print(c)
+                a=int(input(""))
             else:
                 return a
         except: 
             ValueError
-            print("Enter a number!")
-            check=False    if a>2 or isinstance(a,int)==False:
-                check=False
-                print("You enter is greater than maxmum number of stops.\nPlease try entera number less than 3")
-            else:
-                break
-        except: 
-            ValueError
-            print("Enter a number!")
+            a=input("Enter a number! ")
             check=False
+def check_str(a):
+    check=False
+    a=a.upper()
+    while check==False:
+        if a!="Y" and a!="N" or isinstance(a,str)==False:
+            check=False
+            print("You enter is invalid! Please try again!")
+            a=input("")
+            a=a.upper()
+        else:
+            return a
+def passenger_detail(conString,connection,curs, email,a,b,dep_date):
+    name=input("Enter passenger name ")
+    con=input("Enter your country ")
+    c=a[b-1]
+    flightno=c[0]
+    fare=c[7]
+    pay=c[6]
+    tno=random.randint(0, 9999)
+    booking.addBooking(conString,connection,curs, email, name, con, tno, pay, flightno, fare, dep_date)    

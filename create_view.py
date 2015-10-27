@@ -56,7 +56,7 @@ def search_view(conString,connection,curs):
         curs.execute("""drop view good_connections""")
         connection.commit()    
     good_connections="""
-    create view good_connections (flightno1,flightno2,src,dst,dep_date,dep_time,arr_time,layover,price,seat1,seat2) as
+    create view good_connections (flightno1,flightno2,src,dst,dep_date,dep_time,arr_time,layover,price,seat1,seat2,fare1,fare2) as
     select a1.flightno, 
     a2.flightno,  
     a1.src, 
@@ -67,7 +67,10 @@ def search_view(conString,connection,curs):
     a2.dep_time-a1.arr_time,
     min(a1.price+a2.price) price,
     a1.seats,
-    a2.seats
+    a2.seats,
+    a1.fare,
+    a2.fare
+    
     from available_flights a1, 
     available_flights a2
     where a1.dst=a2.src and 
@@ -83,7 +86,9 @@ def search_view(conString,connection,curs):
     a2.dep_time,
     a1.arr_time,
     a1.seats,
-    a2.seats
+    a2.seats,
+    a1.fare,
+    a2.fare
     """
     curs.execute(good_connections)
     
@@ -93,7 +98,7 @@ def search_view(conString,connection,curs):
         curs.execute("""drop view good2_connections""")
         connection.commit()    
     good2_connections="""
-    create view good2_connections (flightno1,flightno2,flightno3,src,dst,dep_date,dep_time,arr_time,layover,price,seat1,seat2,seat3) as
+    create view good2_connections (flightno1,flightno2,flightno3,src,dst,dep_date,dep_time,arr_time,layover,price,seat1,seat2,seat3,fare1,fare2,fare3) as
     select a1.flightno, 
     a2.flightno,  
     a3.flightno,
@@ -106,7 +111,10 @@ def search_view(conString,connection,curs):
     min(a1.price+a2.price+a3.price) price,
     a1.seats,
     a2.seats,
-    a3.seats
+    a3.seats,
+    a1.fare,
+    a2.fare,
+    a3.fare
     from available_flights a1, 
     available_flights a2,
     available_flights a3
@@ -130,7 +138,10 @@ def search_view(conString,connection,curs):
     a3.dep_time,
     a1.seats,
     a2.seats,
-    a3.seats
+    a3.seats,
+    a1.fare,
+    a2.fare,
+    a3.fare
     """
     curs.execute(good2_connections)
     connection.commit()    

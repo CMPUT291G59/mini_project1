@@ -1,0 +1,89 @@
+import random
+import sys
+import cx_Oracle # the package used for accessing Oracle in Python
+import getpass # the package for getting password from user without displaying it
+import interface
+
+
+def database_connection():
+    # get username
+    user = input("Username [%s]: " % getpass.getuser())
+    if not user:
+	    user=getpass.getuser()
+	
+    # get password
+    pw = getpass.getpass()
+    
+    # The URL we are connnecting to
+    global conString
+    conString=''+user+'/' + pw +'@gwynne.cs.ualberta.ca:1521/CRS'
+    #conString=''+'xinchao'+'/' + 'Wang0408' +'@gwynne.cs.ualberta.ca:1521/CRS'
+    try:
+	    global connection 
+	    global curs
+	    connection = cx_Oracle.connect(conString)
+	    curs = connection.cursor()
+    except cx_Orprintacle.DatabaseError as exc:
+    #except Exception as exc:
+	    #pass
+	    error, = exc.args
+	    print( sys.stderr, "Oracle code:", error.code)
+	    print( sys.stderr, "Oracle message:", error.message)
+
+
+def bookingView(conString,connection,curs, email):
+    query = """select tickets.name, tickets.paid_price, bookings.* from
+        bookings, tickets where
+        tickets.tno = bookings.tno and
+        tickets.email = '{0}'""".format(email)
+    curs.execute(query)
+	
+def addBooking(cs,cn,curs, email, name, con, tno, pay, flightno, fare, dep_date):
+    a = str(random.randint(0, 99))
+    b = random.choice("ABCDEF")
+    seatNum = a+b
+    
+    query =""" insert into passengers values('{0}','{1}','{2}')""".format(email, name, fare, con)
+    curs.execute(query)
+    connection.commit()
+    query =""" insert into tickets values('{0}','{1}','{2}','{3}')""".format(tno, name, email, pay)
+    curs.execute(query)
+    connection.commit()
+			
+    query = """insert into bookings
+        values({0}, '{1}', '{2}', to_date('{3}', 'DD/MM/YYYY'), '{4}')""".format(tno, flightno, fare, dep_date, seatNum)
+    curs.execute(query)
+    connection.commit()
+    return tno
+
+def cancelBooking(conString,connection,curs, tno, name):
+    query = """delete from
+    bookings where bookings.tno = '{0}'""".format(tno)
+    curs.execute(query)
+    connection.commit()
+    
+    query = """delete from
+    tickets where tickets.tno = '{0}'""".format(tno)
+    curs.execute(query)
+    connection.commit()        
+    
+    query = """delete from
+    passengers where passengers.name = '{0}'""".format(name)
+    curs.execute(query)
+    connection.commit()         
+
+
+database_connection()
+
+print("welcome")
+a = random.randint(0, 9999)
+print(a)
+tno = addBooking(conString,connection,curs,'null112@gmail.com','Come on12','USA',a,88888,'AC001','J','15/10/2015')
+print("this is t number")
+print("success added")
+
+tno = int(input("please enter tno"))
+name = input("name please")
+cancelBooking(conString,connection,curs, tno,name)
+
+print("fucking deleted")
