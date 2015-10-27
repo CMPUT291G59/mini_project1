@@ -1,0 +1,33 @@
+select 
+    flightno1,
+    flightno2,
+    dep_date, 
+    src, 
+    dst, 
+    to_char(dep_time,'HH24:MI'),
+    to_char(arr_time, 'HH24:MI'), 
+    layover*1440, 
+    price,
+    seat1,
+    seat2
+    from good_connections g_c
+    where g_c.src='GLV' and
+    g_c.dst='MTM' and
+    g_c.dep_date=to_date('07/12/2015','dd/mm/yyyy')
+    union
+    select 
+    flightno,
+    '' flightno2,
+    dep_date, 
+    src, 
+    dst, 
+    to_char(dep_time,'HH24:MI'),
+    to_char(arr_time, 'HH24:MI'), 
+    0 layover, 
+    price,
+    seats,
+    null seat2
+    from available_flights a
+    where a.src='GLV' and
+    a.dst='MGM' and
+    a.dep_date=to_date('07/12/2015','dd/mm/yyyy')

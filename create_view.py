@@ -1,6 +1,6 @@
 import sys
 import os
-#using the Assigngment2 solution provide by instructor
+#using the Assigngment2 solution provide by instructor and Chris Wang's solution as well
 def search_view(conString,connection,curs):
     curs.execute("Select view_name from all_views where lower(view_name) = 'available_flights'")
     a_flights=curs.fetchall()
@@ -48,4 +48,89 @@ def search_view(conString,connection,curs):
     having fa.limit-count(tno) > 0)"""
     
     curs.execute(availableFlights)
-    connection.commit()
+    
+    
+    curs.execute("Select view_name from all_views where lower(view_name) = 'good_connections'")
+    c_flights=curs.fetchall()
+    if len(c_flights)!=0:
+        curs.execute("""drop view good_connections""")
+        connection.commit()    
+    good_connections="""
+    create view good_connections (flightno1,flightno2,src,dst,dep_date,dep_time,arr_time,layover,price,seat1,seat2) as
+    select a1.flightno, 
+    a2.flightno,  
+    a1.src, 
+    a2.dst, 
+    a1.dep_date,
+    a1.dep_time,
+    a2.arr_time,
+    a2.dep_time-a1.arr_time,
+    min(a1.price+a2.price) price,
+    a1.seats,
+    a2.seats
+    from available_flights a1, 
+    available_flights a2
+    where a1.dst=a2.src and 
+    a1.arr_time +1.5/24 <=a2.dep_time and 
+    a1.arr_time +5/24 >=a2.dep_time
+    group by a1.src, 
+    a2.dst, 
+    a1.dep_date, 
+    a1.flightno, 
+    a2.flightno, 
+    a1.dep_time, 
+    a2.arr_time,
+    a2.dep_time,
+    a1.arr_time,
+    a1.seats,
+    a2.seats
+    """
+    curs.execute(good_connections)
+    
+    curs.execute("Select view_name from all_views where lower(view_name) = 'good2_connections'")
+    c2_flights=curs.fetchall()
+    if len(c2_flights)!=0:
+        curs.execute("""drop view good2_connections""")
+        connection.commit()    
+    good2_connections="""
+    create view good2_connections (flightno1,flightno2,flightno3,src,dst,dep_date,dep_time,arr_time,layover,price,seat1,seat2,seat3) as
+    select a1.flightno, 
+    a2.flightno,  
+    a3.flightno,
+    a1.src,
+    a3.dst,
+    a1.dep_date,
+    a1.dep_time,
+    a3.arr_time,
+    (a2.dep_time-a1.arr_time)+(a3.dep_time-a2.arr_time),
+    min(a1.price+a2.price+a3.price) price,
+    a1.seats,
+    a2.seats,
+    a3.seats
+    from available_flights a1, 
+    available_flights a2,
+    available_flights a3
+    where a1.dst=a2.src and 
+    a2.dst=a3.src and
+    a1.arr_time +1.5/24 <=a2.dep_time and 
+    a1.arr_time +5/24 >=a2.dep_time and 
+    a2.arr_time +1.5/24 <=a3.dep_time and 
+    a2.arr_time +5/24 >=a3.dep_time
+    group by a1.src, 
+    a3.dst,
+    a1.dep_date, 
+    a1.flightno, 
+    a2.flightno,
+    a3.flightno,
+    a1.dep_time, 
+    a3.arr_time,
+    a2.dep_time,
+    a1.arr_time,
+    a2.arr_time,
+    a3.dep_time,
+    a1.seats,
+    a2.seats,
+    a3.seats
+    """
+    curs.execute(good2_connections)
+    connection.commit()    

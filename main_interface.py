@@ -46,12 +46,32 @@ def search_flight(conString,connection,curs,email):
     roundtrip=roundtrip.upper()
     if roundtrip=="Y":
         dep_date=input("Enter your departure date (dd/mm/yyyy)")
-        reture_date=input("Enter your returen date (dd/mm/yyyy)")
+        return_date=input("Enter your returen date (dd/mm/yyyy)")
     if roundtrip=="N":
         dep_date=input("Enter your departure date (dd/mm/yyyy)")
-    a=input("Do you want connecting flights? (Y/N) ")
+    a=input("Do you want 2 stop numbers? (Y/N) ")
     a=a.upper()
     if a=="N" and roundtrip=="N":
-        search.find_direct_flight(conString,connection,curs,email,src,dst,dep_date)
-        
-        
+        print("Departure on "+dep_date+"\n")
+        search.find_regular_flight(conString,connection,curs,email,src,dst,dep_date)
+    if a=="N" and roundtrip=="Y":
+        print("Departure on "+dep_date+"\n")
+        search.find_regular_flight(conString,connection,curs,email,src,dst,dep_date)
+        src1=src
+        dst1=dst
+        src=dst1
+        dst=src1
+        print("\n"+"Return on "+return_date+"\n")
+        search.find_regular_flight(conString,connection,curs,email,src,dst,return_date)
+    if a=="Y" and roundtrip=="N":
+        print("Departure on "+dep_date+"\n")
+        search.find_2stop_flight(conString,connection,curs,email,src,dst,dep_date)
+    if a=="Y" and roundtrip=="Y":
+        print("Departure on "+dep_date+"\n")
+        search.find_2stop_flight(conString,connection,curs,email,src,dst,dep_date)
+        src1=src
+        dst1=dst
+        src=dst1
+        dst=src1
+        print("\n"+"Return on "+return_date+"\n")
+        search.find_2stop_flight(conString,connection,curs,email,src,dst,dep_date)

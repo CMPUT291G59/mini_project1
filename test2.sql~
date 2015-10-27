@@ -1,0 +1,16 @@
+select 
+    flightno1,
+    flightno2,
+    dep_date, 
+    src, 
+    dst, 
+    to_char(dep_time,'HH24:MI'),
+    to_char(arr_time, 'HH24:MI'), 
+    layover, 
+    price,
+    seat1,
+    seat2
+    from good_connections g_c
+    where g_c.src='LAX' and
+    g_c.dst='YVR' and
+    g_c.dep_date=to_date('23/10/2015','dd/mm/yyyy');

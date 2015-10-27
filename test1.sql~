@@ -1,0 +1,15 @@
+drop view GOOD_CONNECTIONS;
+create view good_connections(src, dst, dep_date, flightno1, flightno2, layover_minute,total_price) as
+select*
+from(
+select af1.src src, af2.dst dst, af1.dep_date dep_date,
+        af1.flightno flightno1, af2.flightno flightno2,
+        1440*(to_date(af2.dep_time,'hh24:mi')-to_date(af1.arr_time,'hh24:mi')) layover_minute,
+        af1.price+af2.price total_price
+from available_flights af1, available_flights af2
+where af1.dst=af2.src
+and af1.src<>af2.dst
+and 1440*(to_date(af2.dep_time,'hh24:mi')-to_date(af1.arr_time,'hh24:mi'))>=90
+and 1440*(to_date(af2.dep_time,'hh24:mi')-to_date(af1.arr_time,'hh24:mi'))<=60*5
+order by total_price);
+select * from GOOD_CONNECTIONS;
