@@ -45,9 +45,9 @@ def main(conString,connection,curs,email, isAgent):
     
 def search_flight(conString,connection,curs,email):
     src=input("Enter your departure airport: ")
-    src=src.upper()
+    src=search.find_acode(conString,connection,curs,src)
     dst=input("Enter your arrival airport: ")
-    dst=dst.upper()
+    dst=search.find_acode(conString,connection,curs,dst)
     roundtrip=input("Do you want to book round trip? (Y/N) ")
     roundtrip=roundtrip.upper()
     if roundtrip=="Y":
@@ -58,7 +58,6 @@ def search_flight(conString,connection,curs,email):
     a=input("Do you want 2 stop numbers? (Y/N) ")
     a=a.upper()
     if a=="N" and roundtrip=="N":
-<<<<<<< HEAD
         print("Departure on "+dep_date+"\n")
         search.find_regular_flight(conString,connection,curs,email,src,dst,dep_date)
     if a=="N" and roundtrip=="Y":
@@ -82,7 +81,6 @@ def search_flight(conString,connection,curs,email):
         dst=src1
         print("\n"+"Return on "+return_date+"\n")
         search.find_2stop_flight(conString,connection,curs,email,src,dst,dep_date)
-=======
         search.find_direct_flight(conString,connection,curs,email,src,dst,dep_date)
 
 
@@ -99,7 +97,3 @@ def record_arv(conString,connection,curs, flightno,arv_date,time):
         WHERE flightno = '{1}' AND dep_date = TO_DATE('{2}', 'DD/MM/YYYY')""".format(time, flightno, arv_date)	
     curs.execute(query)
     connection.commit()
-
-        
-        
->>>>>>> 9a230ca0107cf4225104daaf6af44d2fa04d03f2

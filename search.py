@@ -1,6 +1,38 @@
 import sys
 import os 
 import create_view
+def find_acode(conString,connection,curs,a_text):
+    a_text=a_text.upper()
+    print(a_text)
+    afind="""
+    select acode
+    from airports a
+    where upper(a.acode)='{0}'
+    or upper(a.acode)='{0}%'
+    or upper(a.acode)='%{0}'
+    or upper(a.acode)='%{0}%'
+    or upper(a.name) like '{0}'
+    or upper(a.name) like '{0}%'
+    or upper(a.name) like '%{0}'
+    or upper(a.name) like '%{0}%'
+    or upper(a.city) like '{0}'
+    or upper(a.city) like '{0}%'
+    or upper(a.city) like '%{0}'
+    or upper(a.city) like '%{0}%'
+    """
+    curs.execute(afind.format(a_text))  
+    a_find=curs.fetchall()
+    print(a_find)
+    if len(a_find==0):
+        print("You enter is invalid please try again!!!")
+    elif len(a_find!=0):
+        print(a_find)
+	#for i, a in enumerate(a_find):
+	    #print(str(i + 1)+" "+str(a[0]))
+	#b=int(input("Choose a airport "))
+	#a_text=a[b]
+    
+
 def find_regular_flight(conString,connection,curs,email,src,dst,dep_date):
     create_view.search_view(conString,connection,curs)
     query = """select 
