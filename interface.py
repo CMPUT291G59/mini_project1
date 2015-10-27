@@ -56,12 +56,23 @@ def search_flight(conString,connection,curs,email):
         return_date=input("Enter your returen date (dd/mm/yyyy)")
     if roundtrip=="N":
         dep_date=input("Enter your departure date (dd/mm/yyyy)")
-    a=input("Do you want 2 stop numbers? (Y/N) ")
-    a=a.upper()
-    if a=="N" and roundtrip=="N":
+    print("How may stop you want? (Maximum 2 stop) ")
+            
+    if a==0 and roundtrip=="N":
+        print("Departure on "+dep_date+"\n")
+        search.find_direct_flight(conString,connection,curs,email,src,dst,dep_date)  
+    if a==0 and roundtrip=="Y":
+        print("Departure on "+dep_date+"\n")
+        search.find_direct_flight(conString,connection,curs,email,src,dst,dep_date)
+        src1=src
+        dst1=dst
+        src=dst1
+        dst=src1
+        print("\n"+"Return on "+return_date+"\n")    
+    if a==1 and roundtrip=="N":
         print("Departure on "+dep_date+"\n")
         search.find_regular_flight(conString,connection,curs,email,src,dst,dep_date)
-    if a=="N" and roundtrip=="Y":
+    if a==1 and roundtrip=="Y":
         print("Departure on "+dep_date+"\n")
         search.find_regular_flight(conString,connection,curs,email,src,dst,dep_date)
         src1=src
@@ -70,10 +81,10 @@ def search_flight(conString,connection,curs,email):
         dst=src1
         print("\n"+"Return on "+return_date+"\n")
         search.find_regular_flight(conString,connection,curs,email,src,dst,return_date)
-    if a=="Y" and roundtrip=="N":
+    if a==2 and roundtrip=="N":
         print("Departure on "+dep_date+"\n")
         search.find_2stop_flight(conString,connection,curs,email,src,dst,dep_date)
-    if a=="Y" and roundtrip=="Y":
+    if a==2 and roundtrip=="Y":
         print("Departure on "+dep_date+"\n")
         search.find_2stop_flight(conString,connection,curs,email,src,dst,dep_date)
         src1=src
@@ -98,3 +109,24 @@ def record_arv(conString,connection,curs, flightno,arv_date,time):
         WHERE flightno = '{1}' AND dep_date = TO_DATE('{2}', 'DD/MM/YYYY')""".format(time, flightno, arv_date)	
     curs.execute(query)
     connection.commit()
+def check_int(a,b):
+    check=False
+    while check==False:
+        try:
+            a=int(input(""))
+            if a>b or isinstance(a,int)==False:
+                check=False
+            else:
+                return a
+        except: 
+            ValueError
+            print("Enter a number!")
+            check=False    if a>2 or isinstance(a,int)==False:
+                check=False
+                print("You enter is greater than maxmum number of stops.\nPlease try entera number less than 3")
+            else:
+                break
+        except: 
+            ValueError
+            print("Enter a number!")
+            check=False

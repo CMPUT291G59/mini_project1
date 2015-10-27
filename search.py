@@ -31,7 +31,36 @@ def find_acode(conString,connection,curs,a_text):
         a_text=a_find[b-1][0]
         return a_text
     
-
+def find_direct_flight(conString,connection,curs,email,src,dst,dep_date):
+    create_view.search_view(conString,connection,curs)
+    query = """
+	select 
+	flightno,
+	dep_date, 
+	src, 
+	dst, 
+	to_char(dep_time,'HH24:MI'),
+	to_char(arr_time, 'HH24:MI'), 
+	price,
+	seats
+	from available_flights a
+	where a.src='{0}' and
+	a.dst='{1}' and
+	a.dep_date=to_date('{2}','dd/mm/yyyy')
+        """
+    curs.execute(query.format(src, dst, dep_date))
+    flight=curs.fetchall()
+    print("Index"+5*" "+"Flightno"+2*" "+"src"+7*" "+"dst"+7*" "+"Dep_time"+2*" "+"Arr_time"+2*" "+"price"+5*" "+"seat")
+    for i, a in enumerate(flight):
+		    print(str(i + 1) + (10-len(str(i + 1)))*' ' +a[0] +(10-len(a[0]))*' ' + str(a[2]) + (10-len(str(a[2])))*' ' + str(a[3]) + (10-len(str(a[3])))*' '+ str(a[4]) + (10-len(str(a[4])))*' '+ str(a[5]) + (10-len(str(a[5])))*' '+ str(a[6])+(10-len(str(a[6])))*' '+ str(a[7]))
+    check=input("Do you want to book any flight above? (Y/N) ")
+    check=check.upper()
+    if check=="Y":
+        print(1)
+    elif check=="N":
+        return
+    else:
+        print("Invalid input please try again")    
 def find_regular_flight(conString,connection,curs,email,src,dst,dep_date):
     create_view.search_view(conString,connection,curs)
     query = """select 
@@ -72,17 +101,18 @@ def find_regular_flight(conString,connection,curs,email,src,dst,dep_date):
     
     curs.execute(query.format(src, dst, dep_date))
     flight=curs.fetchall()
+    
     print("Index"+5*" "+"Flightno1"+1*" "+"Flightno2"+1*" "+"src"+7*" "+"dst"+7*" "+"Dep_time"+2*" "+"Arr_time"+2*" "+"layover"+3*" "+"price"+5*" "+"seat1"+5*" "+"seat2"+5*" "+"no_stop")
     for i, a in enumerate(flight):
 		    print(str(i + 1) + (10-len(str(i + 1)))*' ' +a[0] +(10-len(a[0]))*' ' + str(a[1]) + (10-len(str(a[1])))*' ' + str(a[3]) + (10-len(str(a[3])))*' '+ str(a[4]) + (10-len(str(a[4])))*' '+ str(a[5]) + (10-len(str(a[5])))*' '+ str(a[6]) +(10-len(str(a[6])))*' '+ str(a[7]) + (10-len(str(a[7])))*' '+ str(a[8])+(10-len(str(a[8])))*' '+ str(a[9])+(10-len(str(a[9])))*' '+ str(a[10])+(10-len(str(a[10])))*' '+str(a[11]))
     check=input("Do you want to book any flight above? (Y/N) ")
     check=check.upper()
     if check=="Y":
-	print(1)
+        print(1)
     elif check=="N":
-	return
+        return
     else:
-	print("Invalid input please try again")
+        print("Invalid input please try again")
 def find_2stop_flight(conString,connection,curs,email,src,dst,dep_date):
     create_view.search_view(conString,connection,curs)
     query = """select 
@@ -157,8 +187,8 @@ def find_2stop_flight(conString,connection,curs,email,src,dst,dep_date):
     check=input("Do you want to book any flight above? (Y/N) ")
     check=check.upper()
     if check=="Y":
-	print(1)
+        print(1)
     elif check=="N":
-	return
+        return
     else:
-	print("Invalid input please try again")
+        print("Invalid input please try again")
