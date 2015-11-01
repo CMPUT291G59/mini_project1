@@ -27,14 +27,14 @@ def main(conString,connection,curs,email, isAgent):          #create the user in
                 booking.cancelBooking(conString,connection,curs, tno, name)
         elif user_input == "3":
             if isAgent==True:
-                flight_num = input("please enter the filght number that you want to update ")
-                dep_date = input("please enter the depart date of your flight(dd/mm/yyyy) ")
-                dep_time = input("please enter the actual depart time of your flight(hh:mm) ")
+                flight_num = input("please enter the filght number that you want to update")
+                dep_date = input("please enter the depart date of your flight")
+                dep_time = input("please enter the actual depart time of your flight")
                 record_dep(conString,connection,curs, flight_num, dep_date, dep_time)
         elif user_input == "4" and isAgent==True:
-            flight_num = input("please enter the filght number that you want to update ")
-            arv_date = input("please enter the arrival date of your flight(dd/mm/yyyy) ")
-            arv_time = input("please enter the actual arrival time of your flight(hh:mm) ")
+            flight_num = input("please enter the filght number that you want to update")
+            arv_date = input("please enter the arrival date of your flight")
+            arv_time = input("please enter the actual arrival time of your flight")
             record_arv(conString,connection,curs,flight_num, arv_date, arv_time)
         elif user_input.lower() == 'q':
             curs.execute("update users set last_login = sysdate where users.email = '{}'".format(email))
@@ -65,7 +65,7 @@ def search_flight(conString,connection,curs,email):                        # thi
         return_date=input("Enter your returen date (dd/mm/yyyy)")
     if roundtrip=="N":
         dep_date=input("Enter your departure date (dd/mm/yyyy)")
-    print("How many stop you want? (Maximum 2 stop) ")
+    print("How may stop you want? (Maximum 2 stop) ")
     c="You enter is greater than maxmum number of stops.\nPlease try entera number less than 3"
     a=input("")
     a=check_int(a,3,c)
@@ -192,13 +192,6 @@ def record_dep(conString,connection,curs, flightno, dep_date, time):            
         WHERE flightno = '{1}' AND dep_date = TO_DATE('{2}', 'DD/MM/YYYY')""".format(time, flightno, dep_date)	
     curs.execute(query)
     connection.commit()
-    query1="""select flightno, 
-    act_dep_time 
-    from sch_flights
-    WHERE flightno = '{1}' AND dep_date = TO_DATE('{2}', 'DD/MM/YYYY')""".format(time, flightno, dep_date)
-    curs.execute(query1)
-    a=curs.fetchall()
-    print("Your update "+a[0][0]+"actual depart time to "+(a[0][1].strftime('%H:%M:%S')))
 
 def record_arv(conString,connection,curs, flightno,arv_date,time):              # function for agent to record the arr_date
     query = """UPDATE sch_flights
@@ -206,14 +199,6 @@ def record_arv(conString,connection,curs, flightno,arv_date,time):              
         WHERE flightno = '{1}' AND dep_date = TO_DATE('{2}', 'DD/MM/YYYY')""".format(time, flightno, arv_date)	
     curs.execute(query)
     connection.commit()
-    query2="""select flightno, 
-    act_arr_time 
-    from sch_flights
-    WHERE flightno = '{1}' AND dep_date = TO_DATE('{2}', 'DD/MM/YYYY')""".format(time, flightno, arv_date)
-    curs.execute(query2)
-    a=curs.fetchall()
-    print("Your update "+a[0][0]+"actual arrival time to "+(a[0][1].strftime('%H:%M:%S')))
-
 
 
 def check_int(a,b,c):          # check input type
@@ -249,16 +234,15 @@ def passenger_detail(conString,connection,curs, email,a,b,dep_date):       #fetc
     print("")
     print(a[0])
     name=input("Enter passenger name ")
-    con=input("Enter your country ")
-    #book when there is no connection flights
-    if len(a[b-1])==9: 
+    con=input("Enter your country ")        
+    if len(a[b-1])==9:
         c=a[b-1]
         flightno=c[0]
         fare=c[7]
         pay=c[6]
         tno=random.randint(0, 9999)
+        #check passenger
         booking.addBooking(conString,connection,curs, email, name, con, tno, pay, flightno, fare, dep_date)
-    #book when there is 1 connection flights
     elif len(a[0])==14:
         c=a[b-1]
         flightno1=c[0]
@@ -269,15 +253,7 @@ def passenger_detail(conString,connection,curs, email,a,b,dep_date):       #fetc
         tno=random.randint(0, 9999)
         booking.addBooking(conString,connection,curs, email, name, con, tno, pay, flightno1, fare1, dep_date)
         tno=random.randint(0, 9999)
-        query =""" insert into tickets values('{0}','{1}','{2}','{3}')""".format(tno, name, email, pay)
-        curs.execute(query)
-        connection.commit()
-        query = """delete from
-        bookings where bookings.tno = '{0}'""".format(tno)
-        curs.execute(query)
-        connection.commit()
-
-    #book when there is 2 connection flights
+        booking.addBooking(conString,connection,curs, email, name, con, tno, pay, flightno2, fare2, dep_date)
     elif len(a[0])==16:
         c=a[b-1]
         flightno1=c[0]
@@ -289,20 +265,19 @@ def passenger_detail(conString,connection,curs, email,a,b,dep_date):       #fetc
         pay=c[8]
         tno=random.randint(0, 9999)
         booking.addBooking(conString,connection,curs, email, name, con, tno, pay, flightno1, fare1, dep_date)
-        tno=random.randint(0, 9999)
-        query =""" insert into tickets values('{0}','{1}','{2}','{3}')""".format(tno, name, email, pay)
-        curs.execute(query)
-        connection.commit()
-        query = """delete from
-        bookings where bookings.tno = '{0}'""".format(tno)
-        curs.execute(query)
-        connection.commit() 
-        tno=random.randint(0, 9999)
-        query =""" insert into tickets values('{0}','{1}','{2}','{3}')""".format(tno, name, email, pay)
-        curs.execute(query)
-        connection.commit()
-        query = """delete from
-        bookings where bookings.tno = '{0}'""".format(tno)
-        curs.execute(query)
-        connection.commit()
+        booking.addBooking(conString,connection,curs, email, name, con, tno, pay, flightno2, fare2, dep_date)
+        booking.addBooking(conString,connection,curs, email, name, con, tno, pay, flightno3, fare3, dep_date)
+    #if len(a[0])==14:
+        #c=a[b-1]
+        #flightno1=c[0]
+        #flightno2=c[1]
+        #fare1=c[9]
+        #fare2=c[11]
+        #pay=c[7]
+        #tno=random.randint(0, 9999)
+        #booking.addBooking(conString,connection,curs, email, name, con, tno, pay, flightno1, fare1, dep_date)
+        #booking.addBooking(conString,connection,curs, email, name, con, tno, pay, flightno2, fare2, dep_date)
+        
+    
+    
         

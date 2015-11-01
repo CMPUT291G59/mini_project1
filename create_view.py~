@@ -1,7 +1,7 @@
 import sys
 import os
 #using the Assigngment2 solution provide by instructor and Chris Wang's solution as well
-def search_view(conString,connection,curs):           # view all the existing bookings
+def search_view(conString,connection,curs):
     curs.execute("Select view_name from all_views where lower(view_name) = 'available_flights'")
     a_flights=curs.fetchall()
     if len(a_flights)!=0:

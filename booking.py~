@@ -1,62 +1,45 @@
 import random
 import sys
-import cx_Oracle # the package used for accessing Oracle in Python
-import getpass # the package for getting password from user without displaying it
 import interface
-
-
-def database_connection():
-    # get username
-    user = input("Username [%s]: " % getpass.getuser())
-    if not user:
-	    user=getpass.getuser()
-	
-    # get password
-    pw = getpass.getpass()
-    
-    # The URL we are connnecting to
-    global conString
-    conString=''+user+'/' + pw +'@gwynne.cs.ualberta.ca:1521/CRS'
-    #conString=''+'xinchao'+'/' + 'Wang0408' +'@gwynne.cs.ualberta.ca:1521/CRS'
-    try:
-	    global connection 
-	    global curs
-	    connection = cx_Oracle.connect(conString)
-	    curs = connection.cursor()
-    except cx_Orprintacle.DatabaseError as exc:
-    #except Exception as exc:
-	    #pass
-	    error, = exc.args
-	    print( sys.stderr, "Oracle code:", error.code)
-	    print( sys.stderr, "Oracle message:", error.message)
-
-
-def bookingView(conString,connection,curs, email):
+def bookingView(conString,connection,curs, email):     #view all passengers infor from same login email account
     query = """select tickets.name, tickets.paid_price, bookings.* from
-        bookings, tickets where
-        tickets.tno = bookings.tno and
-        tickets.email = '{0}'""".format(email)
+    bookings, tickets where
+    tickets.tno = bookings.tno and
+    tickets.email = '{0}'""".format(email)
     curs.execute(query)
-	
-def addBooking(cs,cn,curs, email, name, con, tno, pay, flightno, fare, dep_date):
-    a = str(random.randint(0, 99))
-    b = random.choice("ABCDEF")
-    seatNum = a+b
+    bv=curs.fetchall()
+    print("Index".ljust(13)+"Ticket_no".ljust(13)+"passenger".ljust(13)+"dep_time".ljust(13)+"price")
+    for i, a in enumerate(bv):
+        print(str(i + 1).ljust(13) +str(a[2]).ljust(13)+ str(a[0].strip()).ljust(13)+(a[5].strftime('%d/%m/%y')).ljust(13)+str(a[1]))
+        
+        
+def addBooking(conString,connection,curs, email, name, con, tno, pay, flightno, fare, dep_date):   # add Booking into the system if the passenger name appear with the same ticket name it will block the booking
+    s = checkStatus(conString,connection,curs,email,name)
+    if s == False:
+        a = str(random.randint(0, 99))
+        b = random.choice("ABCDEF")
+        seatNum = a+b
     
-    query =""" insert into passengers values('{0}','{1}','{2}')""".format(email, name, fare, con)
-    curs.execute(query)
-    connection.commit()
-    query =""" insert into tickets values('{0}','{1}','{2}','{3}')""".format(tno, name, email, pay)
-    curs.execute(query)
-    connection.commit()
+        query =""" insert into passengers values('{0}','{1}','{3}')""".format(email, name, fare, con)
+        curs.execute(query)
+        connection.commit()
+        query =""" insert into tickets values('{0}','{1}','{2}','{3}')""".format(tno, name, email, pay)
+        curs.execute(query)
+        connection.commit()
 			
-    query = """insert into bookings
-        values({0}, '{1}', '{2}', to_date('{3}', 'DD/MM/YYYY'), '{4}')""".format(tno, flightno, fare, dep_date, seatNum)
-    curs.execute(query)
-    connection.commit()
-    return tno
+        query = """insert into bookings
+            values({0}, '{1}', '{2}', to_date('{3}', 'DD/MM/YYYY'), '{4}')""".format(tno, flightno, fare, dep_date, seatNum)
+        curs.execute(query)
+        connection.commit()
+        print("Your booking is successful! Your booking number is "+str(tno))
+        return tno
+    else:
+        print("your booking exists")
+        return tno
 
-def cancelBooking(conString,connection,curs, tno, name):
+
+
+def cancelBooking(conString,connection,curs, tno, name):          # cancel a booking 
     query = """delete from
     bookings where bookings.tno = '{0}'""".format(tno)
     curs.execute(query)
@@ -70,20 +53,33 @@ def cancelBooking(conString,connection,curs, tno, name):
     query = """delete from
     passengers where passengers.name = '{0}'""".format(name)
     curs.execute(query)
-    connection.commit()         
+    connection.commit()  
+    print("You flight is canceled!")
+
+def checkStatus(conString,connection,curs,email,name):    # check if the passenger name exist in the DB
+    query = """select passengers.name 
+    from passengers, tickets, bookings
+    where tickets.tno = bookings.tno
+    and passengers.name = tickets.name
+    and passengers.email = '{0}'
+    and passengers.name = '{1}'""".format(email,name)
+    curs.execute(query)
+    b = curs.fetchall()
+    if not b:
+        return False
+    else:
+        return True
 
 
-database_connection()
+#print("welcome")
+#a = random.randint(0, 9999)
+#print(a)
+#tno = addBooking(conString,connection,curs,'1234@gmail.com','1234','USA',a,88888,'AC001','J','15/10/2015')
+#print("this is t number")
+#print("success added")
+#bookingView(conString,connection,curs, email)
+#tno = int(input("please enter tno"))
+#name = input("name please")
+#cancelBooking(conString,connection,curs, tno,name)
 
-print("welcome")
-a = random.randint(0, 9999)
-print(a)
-tno = addBooking(conString,connection,curs,'null112@gmail.com','Come on12','USA',a,88888,'AC001','J','15/10/2015')
-print("this is t number")
-print("success added")
-
-tno = int(input("please enter tno"))
-name = input("name please")
-cancelBooking(conString,connection,curs, tno,name)
-
-print("fucking deleted")
+#print("fucking deleted")
